@@ -1,0 +1,4 @@
+Pillow==3.2.0
+tesserwrap==0.1.6
+Wand==0.4.2
+wheel==0.24.0
