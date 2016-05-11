@@ -1,6 +1,5 @@
 from PIL import Image
 from tesserwrap import Tesseract
-import rect_helper
 import csv
 import glob
 
