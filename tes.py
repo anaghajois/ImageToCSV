@@ -11,11 +11,8 @@ def get_object(lst, key):
     return None
 
 #Create a csv file and write the list to it as rows
-def save_to_csv(file_name, strings):
-    #Extract the name of the file and save it in the folder 'csv'
-    file_name_parts = file_name.split('/')
-    file_name = file_name_parts[1].replace('.tif','')
-    myfile = open('csv/' + file_name + '.csv', 'wb')
+def save_to_csv(strings):
+    myfile = open('csv/results.csv', 'a+')
     wr = csv.writer(myfile)
     wr.writerows(strings)
 
@@ -44,10 +41,15 @@ def find_most_suitable_column(word, header_rects):
 
     return min_index
 
-#process each line in the image as a row in the csv
-def process_lines(lines, words, header_rects, file_name):
-    cur_word_index = 0
+#write the header to the csv
+def write_header_to_file():
     csv_strings = [['Customer', 'Status', 'Compliance Notes', 'Ship To Street1', 'Ship To Street2', 'Ship To City', 'Ship To State', 'Ship To Zip']]
+    save_to_csv(csv_strings)
+
+#process each line in the image as a row in the csv
+def process_lines(lines, words, header_rects):
+    cur_word_index = 0
+    csv_strings = []
     for line in lines:
         csv_lst = [""] * len(header_rects)
         words_in_line = line.value.split()
@@ -58,7 +60,7 @@ def process_lines(lines, words, header_rects, file_name):
             cur_word_index += 1
         csv_strings.append(csv_lst)
 
-    save_to_csv(file_name, csv_strings)
+    save_to_csv(csv_strings)
 
 #Get a csv file for a given image
 def get_csv(file_name):
@@ -80,12 +82,14 @@ def get_csv(file_name):
     header_rects = get_header_rects()
     zip_word = get_object(words, 'zip')
     zip_word_pos = words.index(zip_word)
+
     #send only the non header lines and words
-    process_lines(lines[header_index + 1:], words[zip_word_pos + 1:], header_rects, file_name)
+    process_lines(lines[header_index + 1:-3], words[zip_word_pos + 1:], header_rects)
 
 #convert data in each file in the folder to a csv file
 def convert_all_in_folder(folder):
     images = glob.glob(folder + "*")
+    write_header_to_file()
     for image_name in images:
         print image_name
         try:
